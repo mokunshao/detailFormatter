@@ -88,7 +88,6 @@
         </div>
 
         <div class="right-panel">
-            <button id="convertBtn">转换</button>
             <div id="result" class="result"></div>
             <div id="buttons" style="display: none;">
                 <button id="copyBtn">复制</button>
@@ -98,8 +97,9 @@
     </div>
 
     <script>
-        document.getElementById('convertBtn').addEventListener('click', function () {
-            const input = document.getElementById('inputText').value;
+        // 自动转换功能
+        document.getElementById('inputText').addEventListener('input', function () {
+            const input = this.value;
             const result = document.getElementById('result');
             const buttons = document.getElementById('buttons');
 
