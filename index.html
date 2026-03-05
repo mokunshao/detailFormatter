@@ -85,6 +85,7 @@
     <div class="container">
         <div class="left-panel">
             <textarea id="inputText" placeholder="请输入需要转换的文本，格式为：字段名: 字段值"></textarea>
+            <button id="processBtn" style="background-color: #007bff; margin-top: 10px;">一键处理</button>
         </div>
 
         <div class="right-panel">
@@ -175,6 +176,33 @@
                     copyMessage.innerHTML = '';
                 }, 2000);
             }
+        });
+
+        // 一键处理按钮功能
+        document.getElementById('processBtn').addEventListener('click', function () {
+            // 读取剪贴板内容
+            navigator.clipboard.readText()
+                .then(text => {
+                    // 将内容赋值到输入框
+                    document.getElementById('inputText').value = text;
+
+                    // 触发输入事件，自动转换
+                    const inputEvent = new Event('input');
+                    document.getElementById('inputText').dispatchEvent(inputEvent);
+
+                    // 等待1秒后执行复制操作
+                    setTimeout(() => {
+                        // 检查复制按钮是否可见
+                        const copyBtn = document.getElementById('copyBtn');
+                        if (copyBtn) {
+                            copyBtn.click();
+                        }
+                    }, 1000);
+                })
+                .catch(err => {
+                    console.error('读取剪贴板失败:', err);
+                    alert('读取剪贴板失败，请手动粘贴内容');
+                });
         });
     </script>
 </body>
