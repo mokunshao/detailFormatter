@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>detailFormatter</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .left-panel {
+            flex: 1;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            font-size: 16px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="container">
+        <div class="left-panel">
+            <textarea id="inputText" placeholder="请输入需要转换的文本，格式为：字段名: 字段值"></textarea>
+        </div>
+
+        <div class="right-panel">
+            <button id="convertBtn">转换</button>
+            <div id="result" class="result"></div>
+            <div id="buttons" style="display: none;">
+                <button id="copyBtn">复制</button>
+                <div id="copyMessage" style="margin-top: 10px; font-size: 14px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('convertBtn').addEventListener('click', function () {
+            const input = document.getElementById('inputText').value;
+            const result = document.getElementById('result');
+            const buttons = document.getElementById('buttons');
+
+            if (!input.trim()) {
+                result.innerHTML = '请输入内容';
+                buttons.style.display = 'none';
+                return;
+            }
+
+            const lines = input.split('\n');
+            let html = '';
+
+            lines.forEach(line => {
+                if (line.trim()) {
+                    const parts = line.split(':');
+                    if (parts.length >= 2) {
+                        const fieldName = parts[0].trim().replace(/\s+/g, ' ');
+                        const fieldValue = parts.slice(1).join(':').trim().replace(/\s+/g, ' ');
+                        html += `<div><strong>${fieldName}:</strong> ${fieldValue}</div>`;
+                    } else {
+                        html += `<div>${line.trim().replace(/\s+/g, ' ')}</div>`;
+                    }
+                }
+            });
+
+            result.innerHTML = html;
+
+            // 只有当生成文本有值时才显示按钮
+            if (html.trim()) {
+                buttons.style.display = 'block';
+            } else {
+                buttons.style.display = 'none';
+            }
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', function () {
+            const result = document.getElementById('result');
+            const copyMessage = document.getElementById('copyMessage');
+
+            // 创建一个Range对象
+            const range = document.createRange();
+
+            // 选择result元素中的所有内容
+            range.selectNodeContents(result);
+
+            // 获取Selection对象
+            const selection = window.getSelection();
+
+            // 清除现有的选择
+            selection.removeAllRanges();
+
+            // 添加新的选择范围
+            selection.addRange(range);
+
+            // 执行复制操作
+            try {
+                // 执行复制命令
+                document.execCommand('copy');
+
+                // 显示复制成功的提示
+                copyMessage.innerHTML = '<span style="color: green;">复制成功！</span>';
+
+                // 2秒后清除提示
+                setTimeout(() => {
+                    copyMessage.innerHTML = '';
+                }, 2000);
+            } catch (err) {
+                console.error('复制失败:', err);
+                copyMessage.innerHTML = '<span style="color: red;">选中成功但复制失败，请手动复制</span>';
+
+                // 2秒后清除提示
+                setTimeout(() => {
+                    copyMessage.innerHTML = '';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+
+</html>
