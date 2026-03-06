@@ -86,6 +86,7 @@
         <div class="left-panel">
             <textarea id="inputText" placeholder="请输入需要转换的文本，格式为：字段名: 字段值"></textarea>
             <button id="processBtn" style="background-color: #007bff; margin-top: 10px;">一键处理</button>
+            <div id="processMessage" style="margin-top: 10px; font-size: 14px;"></div>
         </div>
 
         <div class="right-panel">
@@ -180,6 +181,12 @@
 
         // 一键处理按钮功能
         document.getElementById('processBtn').addEventListener('click', function () {
+            const processBtn = this;
+            const processMessage = document.getElementById('processMessage');
+
+            // 保存按钮原始颜色
+            const originalColor = processBtn.style.backgroundColor;
+
             // 读取剪贴板内容
             navigator.clipboard.readText()
                 .then(text => {
@@ -190,13 +197,27 @@
                     const inputEvent = new Event('input');
                     document.getElementById('inputText').dispatchEvent(inputEvent);
 
+                    // 按钮变绿色
+                    processBtn.style.backgroundColor = '#28a745';
+
+                    // 显示提示信息
+                    processMessage.innerHTML = '<span style="color: green;">已经对粘贴板的文本进行处理！</span>';
+
                     // 等待1秒后执行复制操作
                     setTimeout(() => {
                         // 检查复制按钮是否可见
                         const copyBtn = document.getElementById('copyBtn');
                         if (copyBtn) {
+                            // 将复制按钮改成灰色
+                            copyBtn.style.backgroundColor = '#6c757d';
                             copyBtn.click();
                         }
+
+                        // 2秒后恢复按钮原始颜色和清除提示
+                        setTimeout(() => {
+                            processBtn.style.backgroundColor = originalColor;
+                            processMessage.innerHTML = '';
+                        }, 2000);
                     }, 1000);
                 })
                 .catch(err => {
